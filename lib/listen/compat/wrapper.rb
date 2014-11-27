@@ -107,7 +107,7 @@ module Listen
         # to see if a watcher supports watching that directory. That breaks
         # horribly on read-only directories, so we filter those out.
         def watchable_directories(directories)
-          directories.select { |d| File.directory?(d) && File.writable?(d) }
+          directories.select { |d| ::File.directory?(d) && ::File.writable?(d) }
         end
 
         def listen(*args, &block)

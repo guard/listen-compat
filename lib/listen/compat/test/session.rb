@@ -11,16 +11,10 @@ module Listen
         def initialize(wrapper_class = nil, &block)
           Wrapper.wrapper_class = wrapper_class || Listen::Compat::Test::Fake
           Wrapper.listen_module = Listen::Compat::Test::Simple
+
           fail 'No block given!' unless block_given?
-          @thread = Thread.new do
-            begin
-              block.call
-            rescue StandardError => e
-              msg = "\n\nERROR: Watched listen thread failed: %s: \n%s"
-              STDERR.puts format(msg, e.message, e.backtrace * "\n")
-              raise
-            end
-          end
+
+          @thread = Thread.new { _supervise(&block) }
         end
 
         # Simulate a Ctrl-C from the user
@@ -43,12 +37,20 @@ module Listen
 
         private
 
+        def _supervise(&block)
+          block.call
+        rescue StandardError => e
+          msg = "\n\nERROR: Watched listen thread failed: %s: \n%s"
+          STDERR.puts format(msg, e.message, e.backtrace * "\n")
+          raise
+        end
+
         def _events(modified, added, removed)
           [_abs_paths(modified), _abs_paths(added), _abs_paths(removed)]
         end
 
         def _abs_paths(paths)
-          paths.map { |path| File.expand_path(path) }
+          paths.map { |path| ::File.expand_path(path) }
         end
 
         def _wait_until_ready
