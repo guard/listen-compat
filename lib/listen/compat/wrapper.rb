@@ -1,3 +1,5 @@
+require 'listen/compat/version' # just for convenience
+
 module Listen
   module Compat
     # Tries to require Listen using rubygems or vendored version
