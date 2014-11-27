@@ -33,6 +33,7 @@ module Listen
     module Wrapper
       class << self
         attr_writer :listen_module
+        attr_accessor :wrapper_class
 
         def listen_module
           @listen_module ||= Listen
@@ -156,6 +157,8 @@ module Listen
       # Returns a wrapper matching the listen version
       # @param version_string overrides detection (e.g. for testing)
       def self.create(version_string = nil)
+        return Wrapper.wrapper_class.new if Wrapper.wrapper_class
+
         version = Gem::Version.new(version_string || _detect_listen_version)
 
         [Ancient, Old, Stale, Current].each do |klass|

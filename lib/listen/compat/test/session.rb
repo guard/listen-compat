@@ -1,5 +1,6 @@
 require 'listen/compat/wrapper'
 require 'listen/compat/test/fake'
+require 'listen/compat/test/simple'
 
 module Listen
   module Compat
@@ -7,7 +8,9 @@ module Listen
       # Class for conveniently simulating interaction with Listen
       class Session
         # Calls the potentially blocking given block in a background thread
-        def initialize(&block)
+        def initialize(wrapper_class = nil, &block)
+          Wrapper.wrapper_class = wrapper_class || Listen::Compat::Test::Fake
+          Wrapper.listen_module = Listen::Compat::Test::Simple
           fail 'No block given!' unless block_given?
           @thread = Thread.new do
             begin

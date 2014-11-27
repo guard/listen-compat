@@ -31,6 +31,7 @@ module MockListen
 
     def setup_for_tests
       Listen::Compat::Wrapper.listen_module = MockListen
+      Listen::Compat::Wrapper.wrapper_class = nil # autodetect
       @calls = Queue.new
       @mocks = Queue.new
       @responses = {}
@@ -41,6 +42,8 @@ module MockListen
       instance_variables.each do |var|
         instance_variable_set(var, :unset)
       end
+      Listen::Compat::Wrapper.listen_module = nil
+      Listen::Compat::Wrapper.wrapper_class = nil
     end
 
     # setup actions
