@@ -1,2 +1,2 @@
 require 'listen/compat/version'
-require 'listen/compat/wrapper.rb'
+require 'listen/compat/wrapper'
