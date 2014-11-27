@@ -11,53 +11,22 @@ module Listen
       def try_rubygems
         gem 'listen', '>= 1.1.0', '< 3.0.0'
         require 'listen'
-      rescue Gem::LoadError => e
-        try_vendored_or_ask_to_install_gem(e)
-      end
-
-      def try_without_rubygems
-        require 'listen'
-      rescue LoadError => e
-        try_vendored_or_ask_for_git_checkout(e)
-      end
-
-      def try_vendored_or_ask_for_git_checkout(load_error)
-        try_vendored(load_error)
-      rescue LoadError => e
-        raise unless git_repository?
-        e.message.replace(format("%s\n%s", e.message, msg_about_git_install))
-        raise
-      end
-
-      def try_vendored_or_ask_to_install_gem(load_error)
-        try_vendored(load_error)
-      rescue LoadError => e
+      rescue LoadError, Gem::LoadError => e
         e.message.replace(format("%s\n%s", e.message, msg_about_gem_install))
         raise
       end
 
-      def try_vendored(load_error)
-        dir = Sass::Util.scope('vendor/listen/lib')
-        fail load_error if $LOAD_PATH.include?(dir)
-        $LOAD_PATH.unshift dir
-        require 'listen'
+      def compatible_version
+        !older_than_193?  ?  '~> 2.7' : '~> 1.1'
       end
 
-      def compatible_version
-        Sass::Util.version_geq(RUBY_VERSION, '1.9.3') ?  '~> 2.7' : '~> 1.1'
+      def older_than_193?
+        Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('1.9.3')
       end
 
       def msg_about_gem_install
         format("Run \"gem install listen --version '%s'\" to get it.",
                compatible_version)
-      end
-
-      def msg_about_git_install
-        'Run "git submodule update --init" to get the bundled version.'
-      end
-
-      def git_repository?
-        File.exist?(Sass::Util.scope('.git'))
       end
     end
 
@@ -72,7 +41,7 @@ module Listen
 
       # History of bugs/workarounds:
       #
-      # Ancient (< 2.0.0) - very old version (NOTE: bundled with Sass)
+      # Ancient (< 2.0.0) - very old version
       #   - uses start!
       #   - polling method
       #   - start method blocks
@@ -197,7 +166,7 @@ module Listen
       private
 
       def self._detect_listen_version
-        ListenLoader.load!
+        Loader.load!
         require 'listen/version'
         Listen::VERSION
       end
