@@ -1,8 +1,8 @@
 # Listen::Compat
 
-A wrapper [Listen](https://github.com/guard/listen) to "guarantee" a simplified
-and unchanging (future-compatible) API for cross-platform watching files and
-directories.
+A wrapper for [Listen](https://github.com/guard/listen) to "guarantee" a
+simplified and unchanging (future-compatible) API for cross-platform watching
+files and directories.
 
 It is designed to work with any version of Listen installed (it contains
 workarounds for buggy or incomplete old versions).
